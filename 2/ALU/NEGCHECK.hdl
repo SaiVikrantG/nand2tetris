@@ -1,0 +1,9 @@
+CHIP NEGCHECK {
+  IN 
+      in[16];
+  OUT 
+      res;
+
+  PARTS:
+  Or(a=in[15], b=false, out=res);
+}
