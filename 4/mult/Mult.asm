@@ -7,7 +7,7 @@
 // (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
 // The algorithm is based on repetitive addition.
     @2
-    M = M+1 //Sets value in RAM[2] to 0
+    M = 0 //Sets value in RAM[2] to 0
 (LOOP)
     @1
     D = M   //Set value of D to RAM[1]
