@@ -62,7 +62,7 @@ The C-instruction is used for:
 These bits specify the ALU operation. The table below summarizes supported operations:
 
 | `a` | `c1 c2 c3 c4 c5 c6` | Computation |
-|-----|----------------------|-------------|
+|-----|---------------------|-------------|
 | 0   | 010101              | `0`         |
 | 0   | 011111              | `1`         |
 | 0   | 011010              | `-1`        |
@@ -72,9 +72,26 @@ These bits specify the ALU operation. The table below summarizes supported opera
 | 0   | 001111              | `!D`        |
 | 0   | 110001              | `!A`        |
 | 1   | 110001              | `!M`        |
-|  | ...                 | ...         |
+| 0   | 001111              | `-D`        |
+| 0   | 110011              | `-A`        |
+| 1   | 001111              | `-M`        |
+| 0   | 011111              | `D+1`       |
+| 0   | 110111              | `A+1`       |
+| 1   | 110111              | `M+1`       |
+| 0   | 001110              | `D-1`       |
+| 0   | 110010              | `A-1`       |
+| 1   | 110010              | `M-1`       |
+| 0   | 000010              | `D+A`       |
+| 1   | 000010              | `D+M`       |
+| 0   | 010011              | `D-A`       |
+| 1   | 000010              | `D-M`       |
+| 0   | 000111              | `A-D`       |
+| 1   | 000111              | `M-D`       |
+| 0   | 000000              | `D&A`       |
+| 1   | 000000              | `D&M`       |
+| 0   | 010101              | `D\|A`      |
+| 1   | 010101              | `D\|M`      |
 
-Refer to the textbook for the complete table of operations.
 
 ---
 
