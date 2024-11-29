@@ -107,7 +107,6 @@ These bits specify the jump condition. The table below summarizes the supported 
 ---
 
 ## Example C-Instruction
-```asm
 D = M + 1; JGT
 
 Explanation:
@@ -116,7 +115,7 @@ Computation: M + 1 (value at memory address A plus 1).
 Destination: D register.
 Jump Condition: Jump if the result is greater than zero.
 
-Hack Memory Model
+### Hack Memory Model
 
 Registers:
 R0 to R15 (mapped to RAM[0] to RAM[15]).
