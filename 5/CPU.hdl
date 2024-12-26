@@ -32,5 +32,51 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-	//// Replace this comment with your code.
+    Not(in=instruction[15], out=isA);
+    Not(in=isA, out=isC);
+
+    // A/C Instruction Decision
+    And(a=isC, b=instruction[5], out=isLoad);
+    Mux16(a=instruction, b=ALUOut, sel=isLoad, out=muxA);
+
+    // A Register Operation
+    Or(a=isA, b=instruction[5], out=loadAR);
+    ARegister(in=muxA, load=loadAR, out=AReg, out[0..14]=addressM);
+
+    // ALU Operation
+    And(a=isC, b=instruction[11], out=zx);
+    And(a=isC, b=instruction[10], out=nx);
+    And(a=isC, b=instruction[9], out=zy);
+    And(a=isC, b=instruction[8], out=ny);
+    And(a=isC, b=instruction[7], out=f);
+    And(a=isC, b=instruction[6], out=no);
+    
+    Mux16(a=AReg, b=inM, sel=instruction[12], out=AOrM);
+    ALU(x=DReg, y=AOrM, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, zr=ifZr, ng=ifNg, out=ALUOut, out=outM);
+
+    // D Register Operation
+    And(a=isC, b=instruction[4], out=loadDR);
+    DRegister(in=ALUOut, load=loadDR, out=DReg);
+
+    // Check for Jump of PC
+    And(a=isC, b=instruction[0], out=GT);
+    And(a=isC, b=instruction[1], out=EQ);
+    And(a=isC, b=instruction[2], out=LT);
+
+    And(a=ifNg, b=LT, out=isLT);
+    And(a=ifZr, b=EQ, out=isEQ);
+
+    Not(in=ifNg, out=notNg);
+    Not(in=ifZr, out=notZr);
+    And(a=notNg, b=notZr, out=temp);
+    And(a=temp, b=GT, out=isGT);
+
+    Or(a=isLT, b=isEQ, out=jmp);
+    Or(a=jmp, b=isGT, out=ifJmp);
+
+    // PC Register Operation
+    PC(in=AReg, reset=reset, load=ifJmp, inc=true, out[0..14]=pc);
+
+    // WriteM
+    And(a=isC, b=instruction[3], out=writeM);
 }
