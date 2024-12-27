@@ -7,8 +7,8 @@ This project focuses on implementing the **Memory Chip**, **CPU Chip**, and **Co
 ### Memory Chip
 The **Memory Chip** is responsible for storing data and instructions in the computer system. It implements random access memory (RAM) functionality. The chip must handle reads and writes to memory.
 
-- **Size**: 32K (32,768 memory locations)
-- **Address Range**: 0x0000 to 0x7FFF (0 to 32767 in decimal)
+- **Size**: 16K (16,384 memory locations)
+- **Address Range**: 0x0000 to 0x6000 (0 to 16383 in decimal)
 - **Input/Output**:
   - **Input**: 
     - **Address (15 bits)**: A 16-bit address to access a specific memory location.
@@ -47,7 +47,7 @@ The **Computer Chip** is a high-level integration of the Memory Chip, CPU Chip, 
 ### Address Ranges
 
 - **Memory Address Range**: 
-  - The **Memory Chip** has a 16-bit address space, supporting addresses from `0x0000` to `0x7FFF` (i.e., 32K memory locations).
+  - The **Memory Chip**, combined with Screen and Keyboard Chips has a 15-bit address space, supporting addresses from `0x0000` to `0x6000` (i.e., 16K+8K+1 memory locations).
   
 - **Screen Address Range**:
   - The **Screen Chip** controls the screen output, with a memory-mapped address range from `0x4000` to `0x5FFF`.
@@ -55,7 +55,7 @@ The **Computer Chip** is a high-level integration of the Memory Chip, CPU Chip, 
   - The screen has a resolution of 256x512 pixels, which is mapped to the memory range starting at `0x4000`.
   
 - **Keyboard Address Range**:
-  - The **Keyboard Chip** is mapped to the address range `0x6000` to `0x600F`.
+  - The **Keyboard Chip** is mapped to the address `0x6000`.
   - The chip can be used to read a 16-bit value, representing the state of the keyboard.
 
 ## How It Works
@@ -74,7 +74,7 @@ The **Computer Chip** is a high-level integration of the Memory Chip, CPU Chip, 
 
 4. **Keyboard Chip**:
    - The Keyboard Chip is also memory-mapped. It can be read by the CPU to check which keys are pressed.
-   - The CPU can read the keyboard data from the range `0x6000` to `0x600F`.
+   - The CPU can read the keyboard data at the register with address `0x6000`
 
 ## Usage
 
