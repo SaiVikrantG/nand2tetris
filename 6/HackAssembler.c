@@ -5,32 +5,38 @@
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
-int main(int argc, char *argv[]) {
-  FILE *asm_file;
-  char line[MAX_SIZE]; // Buffer to store file content
+void trim(char *s);
 
-  asm_file = fopen(argv[1], "r"); // Pointer to file
+int main(int argc, char *argv[]) {
+  char line[MAX_SIZE]; // Buffer to store file content
+  int lines = 0;
+
+  FILE *asm_file = fopen(argv[1], "r"); // Pointer to file
 
   if (NULL == asm_file) {
     printf("Assembly file doesn't exist\n");
   } else {
+    char *name = strtok(argv[1], ".");
 
-    printf("Contents of this file are:\n");
+    FILE *hack_file = fopen(strcat(name, ".hack"), "w+");
+
+    if (NULL == hack_file) {
+      printf("Error in opening in hack file.\n");
+
+      return 0;
+    }
 
     while (fgets(line, MAX_SIZE, asm_file) != NULL) {
-      if (line[0] == ' ' || line[0] == '/' ||
-          line[0] == '\n') { // Find a better way to ignore whitespaces and
-                             // comments. Looks too burteforce-ish
+      if (line[0] == '/' ||
+          line[0] == '\r') { // TODO: Find a better way to ignore whitespaces
+                             // and comments. Looks too burteforce-ish
         continue;
       } else {
         char *inst = strtok(line, "//");
 
-        while (NULL != inst) {
-          printf("%s\n", inst);
-          inst = strtok(NULL, "//");
-        }
+        trim(inst);
 
-        // printf("%s", line);
+        // lines++;
       }
     }
 
@@ -38,4 +44,19 @@ int main(int argc, char *argv[]) {
   }
 
   return 0;
+}
+
+void trim(char *s) {
+  // removes leading and trailing whitespaces
+  int i = 0, j = 0;
+
+  while (s[i] == ' ') {
+    i++;
+  }
+
+  while (s[i] != '\r' && s[i] != ' ') {
+    s[j++] = s[i++];
+  }
+
+  s[j] = '\0';
 }
