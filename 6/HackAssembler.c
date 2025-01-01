@@ -5,7 +5,11 @@
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
+typedef enum { ADDRESS = 0, COMP, LABEL } InstructionType;
+
 void trim(char *s);
+InstructionType identify_type(char *s);
+char *convert(char *s);
 
 int main(int argc, char *argv[]) {
   char line[MAX_SIZE]; // Buffer to store file content
@@ -36,11 +40,15 @@ int main(int argc, char *argv[]) {
 
         trim(inst);
 
-        // lines++;
+        char *conv_inst = convert(inst);
+
+        fputs(conv_inst, hack_file);
+        fputs("\n", hack_file);
       }
     }
 
     fclose(asm_file);
+    fclose(hack_file);
   }
 
   return 0;
@@ -59,4 +67,40 @@ void trim(char *s) {
   }
 
   s[j] = '\0';
+}
+
+InstructionType identify_type(char *s) {
+  // idetifies type of instruction
+
+  if (s[0] == '@') {
+    return ADDRESS;
+  } else if (s[0] == '(') {
+    return COMP;
+  } else {
+    return LABEL;
+  }
+}
+
+char *convert(char *s) {
+  InstructionType type = identify_type(s);
+  char *result = (char *)malloc(sizeof(char) * 16);
+  memset(result, '0', sizeof(char) * 16);
+
+  if (type == ADDRESS) {
+    result[0] = '0';
+
+    int address = atoi(s + 1);
+    int i = 15;
+
+    while (address > 0) {
+      result[i--] = address % 2 + '0';
+      address = address / 2;
+    }
+  } else {
+    result[0] = '1';
+    result[1] = '1';
+    result[2] = '1';
+  }
+
+  return result;
 }
