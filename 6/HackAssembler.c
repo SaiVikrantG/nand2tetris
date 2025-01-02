@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "hashmap.h"
+
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
@@ -14,6 +16,15 @@ char *convert(char *s);
 int main(int argc, char *argv[]) {
   char line[MAX_SIZE]; // Buffer to store file content
   int lines = 0;
+  struct nlist *np;
+
+  install("pi", "3.14159");
+
+  if ((np = lookup("pi")) != NULL) {
+    printf("pi: %s\n", np->defn);
+  } else {
+    printf("pi not found in the hash table.\n");
+  }
 
   FILE *asm_file = fopen(argv[1], "r"); // Pointer to file
 
