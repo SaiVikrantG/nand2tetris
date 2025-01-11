@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "hashmap.h"
-
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
@@ -18,24 +16,6 @@ char *convert(char *s);
 int main(int argc, char *argv[]) {
   char line[MAX_SIZE]; // Buffer to store file content
   int lines = 0;
-
-  htab **dict1 = create_hashtab();
-
-  install("pi", "3.14159", dict1);
-  install("e", "1.2345", dict1);
-
-  // if ((np = lookup("pi")) != NULL) {
-  //   printf("pi: %s\n", np->defn);
-  // } else {
-  //   printf("pi not found in the hash table.\n");
-  // }
-
-  prod(dict1);
-
-  htab **dict2 = create_hashtab();
-
-  install("pi2", "3.141", dict2);
-  prod(dict2);
 
   FILE *asm_file = fopen(argv[1], "r"); // Pointer to file
 
@@ -119,9 +99,6 @@ char *convert(char *s) {
       address = address / 2;
     }
   } else {
-    result[0] = '1';
-    result[1] = '1';
-    result[2] = '1';
   }
 
   return result;

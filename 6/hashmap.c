@@ -38,7 +38,12 @@ htab **create_hashtab() {
   htab **hashtab = (htab **)malloc(sizeof(htab *) * HASHSIZE);
 
   if (hashtab == NULL) {
+    fprintf(stderr, "Memory allocation for hash table failed");
     return NULL;
+  }
+
+  for (int i = 0; i < HASHSIZE; i++) {
+    hashtab[i] = NULL;
   }
 
   return hashtab;
