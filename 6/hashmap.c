@@ -1,4 +1,3 @@
-#include "hashmap.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,13 +16,11 @@ char *strduplicate(char *s) {
 }
 
 // table entry
-// struct nlist {
-//   struct nlist *next; // next entry
-//   char *name;
-//   char *defn;
-// };
-
-static struct nlist *hashtab[HASHSIZE]; // pointer table
+typedef struct nlist {
+  struct nlist *next; // next entry
+  char *name;
+  char *defn;
+} htab;
 
 // form hashvalue for string s
 unsigned hash(char *s) {
@@ -36,11 +33,22 @@ unsigned hash(char *s) {
   return hashval % HASHSIZE;
 }
 
-// lookup for s in hash table
-struct nlist *lookup(char *s) {
-  struct nlist *np;
+// creates a hashtab and returns it's reference
+htab **create_hashtab() {
+  htab **hashtab = (htab **)malloc(sizeof(htab *) * HASHSIZE);
 
-  for (np = hashtab[hash(s)]; np != NULL; np = np->next) {
+  if (hashtab == NULL) {
+    return NULL;
+  }
+
+  return hashtab;
+}
+
+// lookup for s in hash table
+htab *lookup(char *s, htab **table) {
+  htab *np;
+
+  for (np = table[hash(s)]; np != NULL; np = np->next) {
     if (strcmp(s, np->name) == 0) {
       return np; // found
     }
@@ -50,20 +58,20 @@ struct nlist *lookup(char *s) {
 }
 
 // install: put (name,defn) in hashtab
-struct nlist *install(char *name, char *defn) {
-  struct nlist *np;
+htab *install(char *name, char *defn, htab **table) {
+  htab *np;
   unsigned hashval;
 
-  if ((np = lookup(name)) == NULL) {
-    np = (struct nlist *)malloc(sizeof(*np));
+  if ((np = lookup(name, table)) == NULL) {
+    np = (htab *)malloc(sizeof(*np));
 
     if (np == NULL || (np->name = strduplicate(name)) == NULL) {
       return NULL;
     }
 
     hashval = hash(name);
-    np->next = hashtab[hashval];
-    hashtab[hashval] = np;
+    np->next = table[hashval];
+    table[hashval] = np;
   } else {
     free((void *)np->defn);
   }
@@ -73,4 +81,17 @@ struct nlist *install(char *name, char *defn) {
   }
 
   return np;
+}
+
+void prod(htab **table) {
+  htab *pointer;
+
+  for (int i = 0; i < HASHSIZE; i++) {
+    pointer = table[i];
+
+    while (pointer != NULL) {
+      printf("%s: %s\n", pointer->name, pointer->defn);
+      pointer = pointer->next;
+    }
+  }
 }
