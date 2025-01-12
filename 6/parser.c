@@ -113,20 +113,81 @@ htab **init_comp_b() {
 char *parse_C(char *s) {
 
   char *dest = strtok(s, "=");
-  char *comp = strtok(NULL, ";");
-  char *jump = strtok(NULL, ";");
+  char *temp = strtok(NULL, "=");
+  char *comp, *jump;
+
+  if (temp == NULL) {
+    comp = strtok(dest, ";");
+    jump = strtok(NULL, ";");
+    dest = NULL;
+  } else {
+    comp = temp;
+    jump = NULL;
+  }
 
   htab **dest_dict = init_dest();
   htab **jump_dict = init_jump();
   htab **comp_dict_a = init_comp_a();
   htab **comp_dict_b = init_comp_b();
 
-  return s;
+  static char *result = NULL;
+  free(result);
+  result = (char *)malloc(16 * sizeof(char));
+
+  result[0] = '1';
+  result[1] = '1';
+  result[2] = '1';
+
+  htab *ref = NULL;
+
+  if ((ref = lookup(comp, comp_dict_a)) != NULL) {
+    result[3] = '0';
+  } else {
+    result[3] = '1';
+    ref = lookup(comp, comp_dict_b);
+  }
+
+  strcat(result, ref->defn);
+
+  if (dest != NULL) {
+    ref = lookup(dest, dest_dict);
+
+    if (ref == NULL) {
+      fprintf(stderr,
+              "Failed to find destination mnemonic in destination hashtable\n");
+    } else {
+      strcat(result, ref->defn);
+    }
+  } else {
+    strcat(result, "000");
+  }
+
+  if (jump != NULL) {
+    ref = lookup(jump, jump_dict);
+
+    if (ref == NULL) {
+      fprintf(stderr, "Failed to find jump mnemonic in jump hashtable\n");
+    } else {
+      strcat(result, ref->defn);
+    }
+  } else {
+    strcat(result, "000");
+  }
+
+  return result;
 }
 
-int main(int argc, char *argv[]) {
-  char s[] = "D=D+A;JGT";
-  parse_C(s);
+// for testing parser function
 
-  return 0;
-}
+// int main(int argc, char *argv[]) {
+//   char s[] = "D=D-A";
+//   printf("%s\n", parse_C(s));
+//
+//   char s1[] = "D;JGT";
+//   printf("%s\n", parse_C(s1));
+//   // parse_C(s1);
+//
+//   printf("Done\n");
+//
+//   return 0;
+// }

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "parser.h"
+
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
@@ -99,6 +101,7 @@ char *convert(char *s) {
       address = address / 2;
     }
   } else {
+    result = parse_C(s);
   }
 
   return result;
