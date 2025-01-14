@@ -75,7 +75,6 @@ int main(int argc, char *argv[]) {
         char *conv_inst = convert(inst);
 
         fputs(conv_inst, hack_file);
-        // fputs("\n", hack_file);
       }
     }
 
@@ -184,12 +183,36 @@ void first_pass(FILE *asm_file) {
   }
 
   while (fgets(line, MAX_SIZE, asm_file) != NULL) {
+    char *inst;
 
-    if (identify_type(line) == COMP) {
+    if (line[0] == '/' || line[0] == '\r') {
+      continue;
+    } else {
+      inst = strtok(line, "//");
+      char *temp = inst;
+      int flag = 0;
+
+      while (*temp != '\0') {
+        if (*temp != ' ') {
+          flag = 1;
+          break;
+        }
+
+        temp++;
+      }
+
+      if (flag == 0) {
+        continue;
+      }
+    }
+
+    trim(inst);
+
+    if (identify_type(inst) == COMP) {
       char *label = line;
       label++;
-      label[strlen(label) - 3] = '\0';
-      itoa(num, line_no + 1);
+      label[strlen(label) - 1] = '\0';
+      itoa(num, line_no);
 
       install(label, num, symbol_table);
     } else {
