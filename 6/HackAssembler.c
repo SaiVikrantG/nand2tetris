@@ -1,20 +1,30 @@
 // TODO: Free memory after using malloc bruh
 
+#include "hashmap.h"
+#include "parser.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "parser.h"
-
 // MAX BUFFER SIZE
 #define MAX_SIZE 100
 
+// ENUMS
 typedef enum { ADDRESS = 0, COMP, LABEL } InstructionType;
 
+// GLOBAL VARIABLES
+htab **symbol_table;
+int free_ram_addr = 16;
+
+// FUNCTION DECLARATIONS
 void trim(char *s);
 InstructionType identify_type(char *s);
 char *convert(char *s);
+void first_pass(FILE *asm_file);
+void itoa(char *num, int i);
 
+// MAIN IMPLEMENTATION STARTS
 int main(int argc, char *argv[]) {
   char line[MAX_SIZE]; // Buffer to store file content
   int lines = 0;
@@ -24,6 +34,8 @@ int main(int argc, char *argv[]) {
   if (NULL == asm_file) {
     printf("Assembly file doesn't exist\n");
   } else {
+    first_pass(asm_file);
+
     char *name = strtok(argv[1], ".");
 
     FILE *hack_file = fopen(strcat(name, ".hack"), "w+");
@@ -91,18 +103,86 @@ char *convert(char *s) {
   memset(result, '0', sizeof(char) * 16);
 
   if (type == ADDRESS) {
-    result[0] = '0';
+    if (isdigit(s[1])) {
+      result[0] = '0';
 
-    int address = atoi(s + 1);
-    int i = 15;
+      int address = atoi(s + 1);
+      int i = 15;
 
-    while (address > 0) {
-      result[i--] = address % 2 + '0';
-      address = address / 2;
+      while (address > 0) {
+        result[i--] = address % 2 + '0';
+        address = address / 2;
+      }
+    } else {
+      result[0] = '0';
     }
-  } else {
+  } else if (type == LABEL) {
     result = parse_C(s);
   }
 
   return result;
+}
+
+void first_pass(FILE *asm_file) {
+  char line[MAX_SIZE];
+  int line_no = 0;
+  symbol_table = create_hashtab();
+
+  // populating symbol tabe with predefined symbols
+  install("SP", "0", symbol_table);
+  install("LCL", "1", symbol_table);
+  install("ARG", "2", symbol_table);
+  install("THIS", "3", symbol_table);
+  install("THAT", "4", symbol_table);
+  install("SCREEN", "16384", symbol_table);
+  install("KBD", "24576", symbol_table);
+
+  char num[12];
+
+  for (int i = 0; i < 16; i++) {
+    itoa(num, i); // Try to make this conversion efficient
+    char reg[4] = "R";
+
+    strcat(reg, num);
+
+    install(reg, num, symbol_table);
+  }
+
+  while (fgets(line, MAX_SIZE, asm_file) != NULL) {
+
+    if (identify_type(line) == COMP) {
+      char *label = line;
+      label++;
+      label[strlen(label) - 3] = '\0';
+      itoa(num, line_no + 1);
+
+      install(label, num, symbol_table);
+    } else {
+      line_no++;
+    }
+  }
+
+  prod(symbol_table);
+  rewind(asm_file);
+}
+
+void itoa(char *num, int i) {
+  int j = 0;
+
+  if (i == 0) {
+    num[j++] = i + '0';
+  } else {
+    while (i > 0) {
+      num[j++] = i % 10 + '0';
+      i = i / 10;
+    }
+  }
+
+  num[j] = '\0';
+
+  for (int k = 0, l = j - 1; k < l; k++, l--) {
+    char temp = num[k];
+    num[k] = num[l];
+    num[l] = temp;
+  }
 }
