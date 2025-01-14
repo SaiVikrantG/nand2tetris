@@ -122,10 +122,12 @@ char *convert(char *s) {
       htab *ref = lookup(s + 1, symbol_table);
 
       if (ref == NULL) {
-        printf("Symbol not found in symbol table\n");
-      } else {
-        // printf("Original: %s\n", s);
+        printf("Symbol not found in symbol table. Adding...\n");
+        char num[12];
+        itoa(num, free_ram_addr++);
 
+        install(s + 1, num, symbol_table);
+      } else {
         int i = 0;
         char *sym = ref->defn;
 
@@ -134,8 +136,6 @@ char *convert(char *s) {
         }
 
         s[i + 1] = '\0';
-
-        // printf("Translated from symbol table: %s\n", s);
       }
     }
 
