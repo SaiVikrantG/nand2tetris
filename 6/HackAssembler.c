@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
         char *temp = inst;
         int flag = 0;
 
-        while (*temp != '\0') {
+        while (*temp !=
+               '\0') { // TODO: Need to improve this whitespace check condition
           if (*temp != ' ') {
             flag = 1;
             break;
@@ -70,13 +71,11 @@ int main(int argc, char *argv[]) {
         }
 
         trim(inst);
-        // printf("%s\n", inst);
-        // printf("Getting past trim \n");
 
         char *conv_inst = convert(inst);
 
         fputs(conv_inst, hack_file);
-        fputs("\n", hack_file);
+        // fputs("\n", hack_file);
       }
     }
 
@@ -117,7 +116,7 @@ InstructionType identify_type(char *s) {
 char *convert(char *s) {
   InstructionType type = identify_type(s);
   char *result = (char *)malloc(sizeof(char) * 16);
-  memset(result, '0', sizeof(char) * 16);
+  memset(result, '0', sizeof(char) * 17);
 
   if (type == ADDRESS) {
     if (!isdigit(s[1])) {
@@ -126,7 +125,7 @@ char *convert(char *s) {
       if (ref == NULL) {
         printf("Symbol not found in symbol table\n");
       } else {
-        printf("Original: %s\n", s);
+        // printf("Original: %s\n", s);
 
         int i = 0;
         char *sym = ref->defn;
@@ -137,7 +136,7 @@ char *convert(char *s) {
 
         s[i + 1] = '\0';
 
-        printf("Translated from symbol table: %s\n", s);
+        // printf("Translated from symbol table: %s\n", s);
       }
     }
 
@@ -148,8 +147,12 @@ char *convert(char *s) {
       result[i--] = address % 2 + '0';
       address = address / 2;
     }
+
+    result[16] = '\n';
   } else if (type == LABEL) {
     result = parse_C(s);
+  } else {
+    result[0] = '\0';
   }
 
   return result;

@@ -132,11 +132,13 @@ char *parse_C(char *s) {
 
   static char *result = NULL;
   free(result);
-  result = (char *)malloc(16 * sizeof(char));
+  result = (char *)malloc(18 * sizeof(char));
 
   result[0] = '1';
   result[1] = '1';
   result[2] = '1';
+  // result[16] = '\n';
+  // result[17] = '\0';
 
   htab *ref = NULL;
 
@@ -173,6 +175,8 @@ char *parse_C(char *s) {
   } else {
     strcat(result, "000");
   }
+
+  strcat(result, "\n");
 
   return result;
 }
