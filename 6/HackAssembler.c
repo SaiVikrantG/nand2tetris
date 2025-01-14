@@ -53,8 +53,25 @@ int main(int argc, char *argv[]) {
         continue;
       } else {
         char *inst = strtok(line, "//");
+        char *temp = inst;
+        int flag = 0;
+
+        while (*temp != '\0') {
+          if (*temp != ' ') {
+            flag = 1;
+            break;
+          }
+
+          temp++;
+        }
+
+        if (!flag) {
+          continue;
+        }
 
         trim(inst);
+        // printf("%s\n", inst);
+        // printf("Getting past trim \n");
 
         char *conv_inst = convert(inst);
 
@@ -103,18 +120,33 @@ char *convert(char *s) {
   memset(result, '0', sizeof(char) * 16);
 
   if (type == ADDRESS) {
-    if (isdigit(s[1])) {
-      result[0] = '0';
+    if (!isdigit(s[1])) {
+      htab *ref = lookup(s + 1, symbol_table);
 
-      int address = atoi(s + 1);
-      int i = 15;
+      if (ref == NULL) {
+        printf("Symbol not found in symbol table\n");
+      } else {
+        printf("Original: %s\n", s);
 
-      while (address > 0) {
-        result[i--] = address % 2 + '0';
-        address = address / 2;
+        int i = 0;
+        char *sym = ref->defn;
+
+        for (; sym[i] != '\0'; i++) {
+          s[i + 1] = sym[i];
+        }
+
+        s[i + 1] = '\0';
+
+        printf("Translated from symbol table: %s\n", s);
       }
-    } else {
-      result[0] = '0';
+    }
+
+    int address = atoi(s + 1);
+    int i = 15;
+
+    while (address > 0) {
+      result[i--] = address % 2 + '0';
+      address = address / 2;
     }
   } else if (type == LABEL) {
     result = parse_C(s);
@@ -162,7 +194,7 @@ void first_pass(FILE *asm_file) {
     }
   }
 
-  prod(symbol_table);
+  // prod(symbol_table);
   rewind(asm_file);
 }
 
