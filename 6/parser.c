@@ -130,7 +130,7 @@ char *parse_C(char *s) {
   htab **comp_dict_a = init_comp_a();
   htab **comp_dict_b = init_comp_b();
 
-  static char *result = NULL;
+  char *result = NULL;
   free(result);
   result = (char *)malloc(18 * sizeof(char));
 
