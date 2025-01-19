@@ -35,6 +35,7 @@ The assembler generates a .hack file in the same directory as the provided `.asm
 - Use proper modifiers in parameters.
 - Need to handle errors and exit from the program effectively, providing accurate error log information.
 - Handle buffer overflows(mostly due to using `strcat`).
+- Limit dynamic allocation at instances not requiring dynamic allocation of memory.
 
 ## Mentions
 - The hashmap implementation was taken from the K&R book, and has worked effectively in storing mnemonics and their mappings, and as a symbol table. The implementation was found in this stack overflow thread [Quick way to implement a dictionary in c](https://stackoverflow.com/questions/4384359/quick-way-to-implement-dictionary-in-c).
